@@ -32,7 +32,7 @@ print(train_y[:10])
 
 # Train the model using the basic features of DecisionTree
 dt = DecisionTree()
-dt.train(X, y, cols[1:])
+dt.train(train_X, train_y, cols[1:])
 print("The model looks like:")
 print(dt)
 print("Testing it out.")
