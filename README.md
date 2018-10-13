@@ -7,4 +7,4 @@ The included dataset comes from the [UCI Machine Learning Repository](https://ar
 
 ## Your notes
 
-If you have any notes to include with your submission, put them here.
+Resubmission: I've fixed the test_result["result"] value issue so there seem to be no more ValueErrors.
