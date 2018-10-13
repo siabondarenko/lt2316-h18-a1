@@ -32,7 +32,7 @@ class DecisionTree:
         target_entropy = - math.fsum(entropy_list)
         return target_entropy
 
-    # calculate every feature class entropy
+    # calculate conditional feature class entropy
     def entropy(self, feature, target):
         counts_list = []
         entropy_list = []
@@ -71,16 +71,16 @@ class DecisionTree:
         # you will need to modify predict and test.
         # *********************************************************************
         #
-        # I've referred to this article for some clarification:
+        # I've referred to this article for some clarification
+        # (how to represent the model in a dictionary):
         # https://www.python-course.eu/Decision_Trees.php.
-        # Specifically, how they represent the model in a dictionary.
 
         label_list = []
         for label in y:
             label_list.append(label)
         # check if all examples in the data have the same label -> return that label
         if len(set(label_list)) <= 1:
-            return label
+            return label_list[0]
         # check number of attributes
         elif len(attrs) == 0:
             return max(set(label_list), key=label_list.count)
@@ -89,13 +89,11 @@ class DecisionTree:
             # find feature with max gain
             max_gain = self.find_max_gain(X, y)
             decision_tree = {max_gain: {}}
-            if max_gain in attrs:
-                attrs.remove(max_gain)
+            new_attrs = [attr for attr in attrs if attr != max_gain]
             for value in set(X[max_gain]):
-                tree_branch = self.train(X.loc[X[max_gain] == value], (y[X[max_gain] == value]), attrs)
+                tree_branch = self.train(X.loc[X[max_gain] == value], (y[X[max_gain] == value]), new_attrs)
                 decision_tree[max_gain][value] = tree_branch
             self.decision_tree = decision_tree
-            self.most_common_value = y.mode()
             return self.decision_tree
 
     def predict(self, instance, tree, most_common_value):
@@ -126,9 +124,10 @@ class DecisionTree:
         instances = []
         results = []
         test_result = X.copy()
+        most_common_value = max(set(list(y)), key=list(y).count)
         for index, row in test_result.iterrows():
             instances.append(row)
-            results.append(self.predict(row, self.decision_tree, self.most_common_value))
+            results.append(self.predict(row, self.decision_tree, most_common_value))
         test_result["result"] = [x for x in results]
         precision_recall_fscore = (precision_recall_fscore_support(y, test_result["result"], average="weighted"))
         ev_result = {'precision':precision_recall_fscore[0],
